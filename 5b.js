@@ -2029,7 +2029,7 @@ let exploreDescLine = 0;
 let previousMenuExplore = 0;
 let exploreUser;
 let exploreUserPageNumbers = [];
-let exploreSortText = ['new','old','plays','trending'];
+let exploreSortText = ['new','trending','plays','old'];
 let exploreSortTextWidth = 160;
 let loggedInExploreUser5beamID = -1; // Temporarily just being used for checking if the user is logged in.
 let exploreLevelTitlesTruncated = new Array(8);
@@ -10560,7 +10560,18 @@ function getAuthHeader() {
 
 function getExplorePage(p, t, s) {
 	requestAdded();
-	return fetch('https://5beam.zelo.dev/api/page' + (s == 3 ? "/trending?sort=" + 0 : "?sort=" + s) + "&page=" + p  + '&type=' + t, {method: 'GET'})
+	// ZELO TODO: Intergrate trending with regular page API so you don't have to do this
+	// ZELO TODO: ALSO, PLAYS AND OLD IS SWAPPED... FIX THAT IN 5BEAM... then fix it again in HTML5b
+	let url = "https://5beam.zelo.dev/api/page"
+	switch (s) {
+		case 0: url += "?sort=0"; break;
+		case 1: url += "/trending?sort=0"; break;
+		case 2: url += "?sort=2"; break;
+		case 3: url += "?sort=1"; break;
+		default:
+			throw new Error("Invalid sort: " + s)
+	}
+	return fetch(url + "&page=" + p  + '&type=' + t, {method: 'GET'})
 		.then(async response => {
 			explorePageLevels = await response.json();
 			if (exploreTab == 0) setExploreThumbs();
